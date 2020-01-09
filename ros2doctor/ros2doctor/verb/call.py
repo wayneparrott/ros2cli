@@ -26,7 +26,7 @@ from std_msgs.msg import String
 
 DEFAULT_GROUP = '225.0.0.1'
 DEFAULT_PORT = 49150
-DEFAULT_TOPIC = 'knockknock'
+DEFAULT_TOPIC = '/knockknock'
 summary_table = {}
 
 
