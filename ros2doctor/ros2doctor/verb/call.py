@@ -33,6 +33,11 @@ summary_table = {}
 class CallVerb(VerbExtension):
     """Publish and subscribe, multicast send and receive, print table."""
 
+    def add_arguments(self, parser, cli_name):
+        parser.add_argument(
+            '-1', '--once', action='store_true',
+            help='Call and print one summary table then exit')
+
     def main(self, *, args):
         rclpy.init()
         pub_node = Talker()
@@ -43,11 +48,13 @@ class CallVerb(VerbExtension):
         executor.add_node(sub_node)
         try:
             count = 0
-            _spawn_summary_table()
+            spawn_summary_table(summary_table)
             while True:
                 if (count % 20 == 0 and count != 0):
                     format_print(summary_table)
-                    _spawn_summary_table()
+                    if args.once:
+                        return summary_table
+                    spawn_summary_table(summary_table)
                 # pub/sub threads
                 executor.spin_once()
                 executor.spin_once()
@@ -149,7 +156,7 @@ def receive():
         s.close()
 
 
-def _spawn_summary_table():
+def spawn_summary_table(summary_table):
     """Spawn summary table with new content after each print."""
     summary_table['pub'] = 0
     summary_table['sub'] = {}
